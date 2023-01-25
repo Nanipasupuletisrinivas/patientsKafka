@@ -1,0 +1,287 @@
+openapi: 3.0.0
+info:
+  title: Notifications Service
+  description: Notifications Service
+  version: v1
+servers:
+  - url: http://localhost:8082
+    description: Local Dev Server
+paths:
+  /notifications/create:
+    post:
+      tags:
+        - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationData"
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationData"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+        "422":
+          $ref: "#/components/responses/UnAcceptableInputs"
+
+  /notifications/getAll:
+    get:
+      tags:
+        - notifications
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/directionParam"
+        - $ref: "#/components/parameters/sortByFieldParam"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notificationPagedResultDto"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+
+  /notifications/get:
+    get:
+      tags:
+        - notifications
+      parameters:
+        - $ref: "#/components/parameters/notifidParam"
+        - $ref: "#/components/parameters/patientIdparam"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationData"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+        "422":
+          $ref: "#/components/responses/UnAcceptableInputs"
+  
+
+  /notifications/delete:
+    delete:
+      tags:
+        - notifications
+      parameters:
+        - $ref: "#/components/parameters/notifidParam"
+        - $ref: "#/components/parameters/patientIdparam"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/Success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+        "422":
+          $ref: "#/components/responses/UnAcceptableInputs"
+
+  
+  /notifications/update:
+    put:
+      tags:
+        - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationData"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationData"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+        "422":
+          $ref: "#/components/responses/UnAcceptableInputs"
+  
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  parameters:
+
+    patientIdparam:
+      name: patientId
+      in: query
+      required: true
+      schema:
+        type: string
+
+    idParam: 
+      name: Notificationid
+      in: query
+      required: true
+      schema:
+        type: string
+      
+    notifidParam:
+      name: Notificationid
+      in: query
+      required: true
+      schema:
+        type: string
+
+    limitParam:
+      name: Limit
+      in: query
+      schema:
+        type: integer
+        nullable: true
+
+    directionParam:
+      name: Direction
+      in: query
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+
+    sortByFieldParam:
+      name: SortByField
+      in: query
+      schema:
+        type: string
+        nullable: true
+
+  responses:
+    Success:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+
+    ResourceNotFoundError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+
+    UnAcceptableInputs:
+      description: Invalid Inputs
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+  schemas:
+    MessageDto:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    notificationPagedResultDto:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationData"
+    
+    NotificationData:
+      type: object
+      properties:
+        appointmentdetails:
+          type: object
+          properties:
+            appointmentDate:
+              format: DateTime
+              type: string
+            appointmentStatus:
+              type: string
+            appointmentType:
+              type: number
+            createdAt:
+              format: DateTime
+              type: string
+            createdBy:
+              type: string
+            doctorId:
+              type: string
+            doctordetails:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                imageUrl:
+                  type: string
+            id:
+              type: string
+            patientId:
+              type: string
+            patientdetails:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                imageUrl:
+                  type: string
+            slotId:
+              type: string
+            slotTime:
+              type: string
+            symptoms:
+              type: string
+
+        avatarUrl:
+          type: string
+        category:
+          type: string
+        createdAt:
+          format: DateTime
+          type: string
+        Notificationid:
+          type: string
+        isViewed: 
+          type: boolean
+        notificationRule: 
+          type: string
+        otherPersonUid:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          format: DateTime
+          type: string
+        updatedBy:
+          type: string
+        isExist:
+          type: boolean
+              
+      
